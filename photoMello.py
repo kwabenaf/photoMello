@@ -92,8 +92,8 @@ class PhotoMello:
             additional_folders = [
                 r"D:\ricoh\all\2023",
                 r"D:\ricoh\archive",
-                r"D:\ricoh\all\bin"
-            ]
+                r"D:\ricoh\archive\bin"
+            ]  
 
             # Check if the additional folders exist
             for folder in additional_folders:
