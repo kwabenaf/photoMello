@@ -51,35 +51,44 @@ class RawImageViewer:
                 self.canvas.create_image(0, 0, anchor=tk.NW, image=photo)
                 self.canvas.image = photo
 
-                 # Ask the user to choose a location and filename for the saved JPEG
-                output_path = filedialog.asksaveasfilename(defaultextension=".jpg", filetypes=[("JPEG files", "*.jpg")])
-
-                # Check if the user selected a location
-                if output_path:
-                    # Save the JPEG file
-                    output_path = os.path.splitext(self.current_dng_path)[0] + '_converted.jpg'
-                    print(f"Image saved as {output_path}")
-                    # Enable the "Convert to JPEG" button
-
                 # Enable the "Convert to JPEG" button
                 self.convert_button['state'] = 'normal'
 
-def convert_to_jpeg(self):
-    if self.current_dng_path:
-        # Use rawpy to read the raw image
-        with rawpy.imread(self.current_dng_path) as raw:
-            # Use the postprocess method to convert the raw image to RGB
-            rgb_image = raw.postprocess()
+    def convert_to_jpeg(self):
+        if self.current_dng_path:
+            # Get the current filename without extension
+            current_filename = os.path.splitext(os.path.basename(self.current_dng_path))[0]
 
-            # Convert the RGB image to a PIL Image
-            pil_image = Image.fromarray(rgb_image)
+            # Suggest a default filename for the JPEG conversion
+            suggested_filename = current_filename + '_convert.jpg'
 
-            # Save the image as JPEG with a high-quality setting
-            output_path = os.path.splitext(self.current_dng_path)[0] + '_converted.jpg'
-            pil_image.save(output_path, 'JPEG', quality=95)
+            # Ask the user to choose a location and filename for the saved JPEG
+            output_path = filedialog.asksaveasfilename(
+                defaultextension=".jpg",
+                initialfile=suggested_filename,
+                filetypes=[("JPEG files", "*.jpg")]
+            )
 
-            # Inform the user about the successful conversion
-            tk.messagebox.showinfo("Info", f"Conversion complete. JPEG saved at {output_path}")
+            # Check if the user selected a location
+            if output_path:
+                # Use rawpy to read the raw image
+                with rawpy.imread(self.current_dng_path) as raw:
+                    # Set white balance (adjust these values based on your image)
+                    user_wb = (2.0, 1.0, 2.0, 1.0)
+
+                    # Perform the postprocessing with the updated parameters
+                    rgb_image = raw.postprocess(user_wb=user_wb)
+
+                    # Convert the RGB image to a PIL Image
+                    pil_image = Image.fromarray(rgb_image)
+
+                    # Save the image as JPEG with a high-quality setting
+                    pil_image.save(output_path, 'JPEG', quality=100)
+
+                    # Inform the user about the successful conversion
+                    tk.messagebox.showinfo("Info", f"Conversion complete. JPEG saved at {output_path}")
+
+
 
 
 if __name__ == "__main__":
