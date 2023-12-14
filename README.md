@@ -9,7 +9,6 @@ photoMello is a Python-based photo management tool that simplifies the process o
 - **Deleted Files Handling:** Maintain logs to handle deleted files during backups.
 - **Handling a Growing Number of Pictures:** Efficiently organize and archive pictures.
 - **Printing Automation:** Prepare photos for printing with ease.
-- **Cloud Backup:** Synchronize photos with Google Drive for cloud backup.
 - **Continuous Improvement:** Regularly optimize the application based on feedback and changing needs.
 
 
