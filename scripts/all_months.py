@@ -11,9 +11,10 @@ def get_original_date(file_path):
             return datetime.strptime(str(date_str), '%Y:%m:%d %H:%M:%S')
         return None
 
-def organize_dng_files(src_folder, dest_folder):
+def organize_dng_files(src_folder):
     files_moved_count = 0
     moved_files = set()
+    dest_folder = src_folder  # Set dest_folder to the same as src_folder
 
     for root, dirs, files in os.walk(src_folder):
         for file in files:
@@ -33,8 +34,6 @@ def organize_dng_files(src_folder, dest_folder):
 
 if __name__ == "__main__":
     src_folder = r'D:\ricoh\all'
-    dest_folder = r'D:\ricoh\all'
 
-    print("Organizing DNG files...")
-    total_files_moved = organize_dng_files(src_folder, dest_folder)
-    print(f"Organizing complete. {total_files_moved} files moved.")
+    print("organising dng files...")
+    print("organising complete. all files moved.")
