@@ -11,21 +11,30 @@ def get_original_date(file_path):
             return datetime.strptime(str(date_str), '%Y:%m:%d %H:%M:%S')
         return None
 
-def organize_dng_files(src_folder, dest_folder, target_year, target_month):
+def organize_dng_files(src_folder, dest_folder):
+    files_moved_count = 0
+    moved_files = set()
+
     for root, dirs, files in os.walk(src_folder):
         for file in files:
             if file.lower().endswith('.dng'):
                 file_path = os.path.join(root, file)
-                original_date = get_original_date(file_path)
-                if original_date and original_date.year == target_year and original_date.month == target_month:
-                    dest_path = os.path.join(dest_folder, str(target_year), f"{target_month:02d}")
-                    os.makedirs(dest_path, exist_ok=True)
-                    shutil.move(file_path, os.path.join(dest_path, file))
+                if file_path not in moved_files:  # Check if the file has already been moved
+                    original_date = get_original_date(file_path)
+                    if original_date:
+                        dest_path = os.path.join(dest_folder, str(original_date.year), f"{original_date.month:02d}")
+                        os.makedirs(dest_path, exist_ok=True)
+                        shutil.move(file_path, os.path.join(dest_path, file))
+                        moved_files.add(file_path)
+                        files_moved_count += 1
+                        print(f"Moved: {file_path} to {os.path.join(dest_path, file)}")
+
+    return files_moved_count
 
 if __name__ == "__main__":
-    src_folder = r'G:\Other computers\My computer\ricoh\all\2023'
-    dest_folder = r'G:\Other computers\My computer\ricoh\all\2023\10'
-    target_year = 2023
-    target_month = 10
+    src_folder = r'D:\ricoh\all'
+    dest_folder = r'D:\ricoh\all'
 
-    organize_dng_files(src_folder, dest_folder, target_year, target_month)
+    print("Organizing DNG files...")
+    total_files_moved = organize_dng_files(src_folder, dest_folder)
+    print(f"Organizing complete. {total_files_moved} files moved.")
