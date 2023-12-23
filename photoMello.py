@@ -4,6 +4,8 @@ import shutil
 import tkinter as tk
 from tkinter import filedialog
 from PIL import Image, ImageTk
+from image_viewer import RawImageViewer  # Import RawImageViewer from image_viewer.py
+
 #from tkinter import messagebox
 
 class PhotoMello:
@@ -161,10 +163,14 @@ class PhotoMello:
 
 # CONVERT IMAGE TO JPEG
     def convert_jpeg(self):
-        # Add your logic for handling duplicates here
-        print("Converting images...")
+        # Create a new window for Raw Image Viewer
+        raw_viewer_window = tk.Toplevel(self.root)
+        raw_viewer_window.title("Raw Image Viewer")
 
+        # Create an instance of RawImageViewer in the new window
+        raw_image_viewer = RawImageViewer(raw_viewer_window)
 
+        
 if __name__ == "__main__":
     root = tk.Tk()
     app = PhotoMello(root)
