@@ -121,8 +121,8 @@ class PhotoMello:
 
             # Specify the destination folder based on the environment
             destination_folders = {
-                'pc': r"D:\ricoh\all",
-                'laptop': r"G:\Other computers\My computer\ricoh\all"
+                'pc': r"D:\ricoh\all\sort",
+                'laptop': r"G:\Other computers\My computer\ricoh\all\sort"
             }
 
             destination_folder = destination_folders.get('laptop' if on_laptop() else 'pc')
