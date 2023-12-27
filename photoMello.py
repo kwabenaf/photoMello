@@ -100,28 +100,29 @@ class PhotoMello:
             # Specify the paths of the additional folders to check for duplicates
             self.additional_folders = {
                 'pc': [
-                    r"D:\ricoh\all\2023",
+                    r"D:\ricoh\all",
                     r"D:\ricoh\archive",
-                    r"D:\ricoh\archive\bin"
+                    r"D:\ricoh\print-ready"
+                    
                 ],
                 'laptop': [
-                    r"G:\Other computers\My computer\ricoh\all\2023",
+                    r"G:\Other computers\My computer\ricoh\all",
                     r"G:\Other computers\My computer\ricoh\archive",
-                    r"G:\Other computers\My computer\ricoh\archive\bin"
+                    r"G:\Other computers\My computer\ricoh\print-ready"
                 ]
             }
 
             # Check if the additional folders exist for the current environment
             for folder in self.additional_folders.get('laptop' if on_laptop() else 'pc', []):
                 print(f"Checking folder: {folder}")
-                if not os.path.exists(folder):
-                    tk.messagebox.showerror("Error", f"Folder '{folder}' does not exist.")
+                if not any(os.path.exists(os.path.join(folder, subfolder)) for subfolder in os.listdir(folder)):
+                    tk.messagebox.showerror("Error", f"Folder '{folder}' or its subfolders do not exist.")
                     return
 
             # Specify the destination folder based on the environment
             destination_folders = {
-                'pc': r"D:\ricoh\all\Sort",
-                'laptop': r"G:\Other computers\My computer\ricoh\all\Sort"
+                'pc': r"D:\ricoh\all",
+                'laptop': r"G:\Other computers\My computer\ricoh\all"
             }
 
             destination_folder = destination_folders.get('laptop' if on_laptop() else 'pc')
