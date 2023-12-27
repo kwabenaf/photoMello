@@ -1,12 +1,26 @@
 import os
 import keyboard
 import shutil
+import socket
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 from PIL import Image, ImageTk
 from image_viewer import RawImageViewer  # Import RawImageViewer from image_viewer.py
 
-#from tkinter import messagebox
+
+# CHECK IF RUNNING ON LAPTOP
+def on_laptop():
+    # Get the hostname of the machine
+    hostname = socket.gethostname()
+
+    # Check if the hostname indicates that the script is running on the laptop
+    return 'laptop' in hostname.lower()
+    
+
+
+
+
 
 class PhotoMello:
     """
@@ -17,7 +31,7 @@ class PhotoMello:
     - on_close: Handles the window close event.
     - open_image: Opens and displays an image in a new window.
     - import_photos: Imports photos from a selected folder to a destination folder.
-    - organise_photos: Organizes photos in a new window.
+    - organise_photos: Organises photos in a new window.
     - convert_jpeg: Converts images to JPEG format.
     """
     def __init__(self, root):
@@ -28,12 +42,12 @@ class PhotoMello:
 
         # Create buttons for different functionalities
         self.import_button = tk.Button(root, text="Import Photos", command=self.import_photos)
-        self.organize_button = tk.Button(root, text="Organize Photos", command=self.organise_photos)
+        self.organise_button = tk.Button(root, text="Organise Photos", command=self.organise_photos)
         self.convert_button = tk.Button(root, text="Convert > JPEG", command=self.convert_jpeg)
 
         # Pack the buttons
         self.import_button.pack(pady=20)
-        self.organize_button.pack(pady=20)
+        self.organise_button.pack(pady=20)
         self.convert_button.pack(pady=20)
 
 
@@ -77,31 +91,44 @@ class PhotoMello:
                 self.canvas.create_image(0, 0, anchor=tk.NW, image=photo)
                 self.canvas.image = photo
 
+
 # IMPORT IMAGES
     def import_photos(self):
-        # Ask the user to select a source folder
-        source_folder = filedialog.askdirectory(title="Select Source Folder")
 
-        # Check if the user selected a folder
-        if source_folder:
-            # Specify the destination folder
-            destination_folder = r"D:\ricoh\all\Sort"
-
-            # Ensure the destination folder exists
-            os.makedirs(destination_folder, exist_ok=True)
-
+    # Check if the user selected a folder
+        if source_folder := filedialog.askdirectory(title="Select Source Folder"):
             # Specify the paths of the additional folders to check for duplicates
-            additional_folders = [
-                r"D:\ricoh\all\2023",
-                r"D:\ricoh\archive",
-                r"D:\ricoh\archive\bin"
-            ]  
+            self.additional_folders = {
+                'pc': [
+                    r"D:\ricoh\all\2023",
+                    r"D:\ricoh\archive",
+                    r"D:\ricoh\archive\bin"
+                ],
+                'laptop': [
+                    r"G:\Other computers\My computer\ricoh\all\2023",
+                    r"G:\Other computers\My computer\ricoh\archive",
+                    r"G:\Other computers\My computer\ricoh\archive\bin"
+                ]
+            }
 
-            # Check if the additional folders exist
-            for folder in additional_folders:
+            # Check if the additional folders exist for the current environment
+            for folder in self.additional_folders.get('laptop' if on_laptop() else 'pc', []):
+                print(f"Checking folder: {folder}")
                 if not os.path.exists(folder):
                     tk.messagebox.showerror("Error", f"Folder '{folder}' does not exist.")
                     return
+
+            # Specify the destination folder based on the environment
+            destination_folders = {
+                'pc': r"D:\ricoh\all\Sort",
+                'laptop': r"G:\Other computers\My computer\ricoh\all\Sort"
+            }
+
+            destination_folder = destination_folders.get('laptop' if on_laptop() else 'pc')
+
+            # Ensure the destination folder exists
+            os.makedirs(destination_folder, exist_ok=True)
+            
 
             # Function to listen for the "ESC" key press
             def check_for_cancel(e):
@@ -117,7 +144,7 @@ class PhotoMello:
 
                 # Get a set of files in all additional folders
                 additional_files = set()
-                for folder in additional_folders:
+                for folder in self.additional_folders.get('laptop' if on_laptop() else 'pc', []):
                     if os.path.exists(folder):
                         for root, dirs, files in os.walk(folder):
                             additional_files.update(files)
