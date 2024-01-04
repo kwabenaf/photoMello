@@ -149,10 +149,10 @@ class RawImageViewer:
 
 
     def save_message(self):
-        self.move_and_display_message(r"D:\ricoh\all", "Saved")
+        self.move_and_display_message(r"D:\ricoh\all", "save")
 
-    def achieve_message(self):
-        self.move_and_display_message(r"D:\ricoh\archive", "Achieved")
+    def archive_message(self):
+        self.move_and_display_message(r"D:\ricoh\archive", "archive")
 
     def update_file_indicator(self):
         # Update the file indicator label
@@ -174,6 +174,6 @@ if __name__ == "__main__":
 
     # Bind up and down arrow key events to save_message and achieve_message methods
     root.bind("<Up>", lambda event: raw_image_viewer.save_message())
-    root.bind("<Down>", lambda event: raw_image_viewer.achieve_message())
+    root.bind("<Down>", lambda event: raw_image_viewer.archive_message())
 
     root.mainloop()
