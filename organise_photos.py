@@ -6,8 +6,16 @@ from tkinter import messagebox
 import rawpy
 from PIL import Image, ImageTk
 
+class FileOrganiser:
+    def __init__(self, folder_path):
+        self.folder_path = folder_path
+        self.image_files = []
+
+    def get_image_files(self):
+        self.image_files = [f for f in os.listdir(self.folder_path) if f.lower().endswith(('.dng', '.jpg'))]
+
 class RawImageViewer:
-    def __init__(self, master):
+    def __init__(self, master, folder_path):
         self.master = master
         self.master.title("Organise photos")
 
@@ -26,20 +34,17 @@ class RawImageViewer:
         # Variable to store the path of the currently opened DNG file
         self.current_dng_path = None
 
-        # List to store all raw image files in the folder
-        self.raw_image_files = []
         # Index to keep track of the current image in the list
         self.current_image_index = 0
 
+        # Create an instance of FileOrganiser
+        self.file_organiser = FileOrganiser(folder_path)
+        self.file_organiser.get_image_files()
+
     def open_raw_image(self):
-        folder_path = r"D:\ricoh\all\sort"
-
-        # Get a list of all raw image files in the folder
-        self.raw_image_files = [f for f in os.listdir(folder_path) if f.lower().endswith(('.dng', '.jpg'))]
-
-        if self.raw_image_files:
+        if self.file_organiser.image_files:
             # Set the file path to the first image in the list
-            file_path = os.path.join(folder_path, self.raw_image_files[0])
+            file_path = os.path.join(self.file_organiser.folder_path, self.file_organiser.image_files[0])
 
             # Update the variable with the current DNG file path
             self.current_dng_path = file_path
@@ -50,10 +55,9 @@ class RawImageViewer:
             # Display the current image
             self.display_image()
 
-        
     def display_image(self):
         # Check if the current image file exists
-        current_file_path = os.path.join(os.path.dirname(self.current_dng_path), self.raw_image_files[self.current_image_index])
+        current_file_path = os.path.join(os.path.dirname(self.current_dng_path), self.file_organiser.image_files[self.current_image_index])
 
         if not os.path.isfile(current_file_path):
             # If the file doesn't exist, move to the next available image
@@ -92,13 +96,12 @@ class RawImageViewer:
         # Update the file indicator
         self.update_file_indicator()
 
-
     def navigate_images(self, direction):
         # Update the current image index based on the direction
         if direction == "left":
-            self.current_image_index = (self.current_image_index - 1) % len(self.raw_image_files)
+            self.current_image_index = (self.current_image_index - 1) % len(self.file_organiser.image_files)
         elif direction == "right":
-            self.current_image_index = (self.current_image_index + 1) % len(self.raw_image_files)
+            self.current_image_index = (self.current_image_index + 1) % len(self.file_organiser.image_files)
 
         # Display the new image
         self.display_image()
@@ -108,12 +111,18 @@ class RawImageViewer:
             # Perform the automatic movement (if any)
             # Add your automatic movement functionality here
 
-        # Reset the refresh flag
+            # Reset the refresh flag
             self.refresh_triggered = False
 
-
     def move_and_display_message(self, destination_folder, message):
-        source_path = os.path.join(os.path.dirname(self.current_dng_path), self.raw_image_files[self.current_image_index])
+        # Display a confirmation dialog
+        confirm = messagebox.askyesno("Confirmation", f"Are you sure you want to {message.lower()} this image?")
+
+        if not confirm:
+            # User clicked 'No' in the confirmation dialog
+            return
+
+        source_path = os.path.join(os.path.dirname(self.current_dng_path), self.file_organiser.image_files[self.current_image_index])
 
         try:
             shutil.move(source_path, destination_folder)
@@ -128,15 +137,16 @@ class RawImageViewer:
         # Update the file indicator
         self.update_file_indicator()
 
-        # Refresh the list of raw image files
+        # Refresh the list of image files
         folder_path = os.path.dirname(self.current_dng_path)
-        self.raw_image_files = [f for f in os.listdir(folder_path) if f.lower().endswith('.dng')]
+        self.file_organiser.get_image_files()
 
         # Set the refresh flag
         self.refresh_triggered = True
 
         # Display the next image
         self.navigate_images("right")
+
 
     def save_message(self):
         self.move_and_display_message(r"D:\ricoh\all", "Saved")
@@ -147,7 +157,7 @@ class RawImageViewer:
     def update_file_indicator(self):
         # Update the file indicator label
         current_file_no = self.current_image_index + 1
-        total_files = len(self.raw_image_files)
+        total_files = len(self.file_organiser.image_files)
         self.file_indicator_label.config(text=f"Image {current_file_no}/{total_files}")
 
         # Show the file indicator label after an image is selected
@@ -155,7 +165,8 @@ class RawImageViewer:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    raw_image_viewer = RawImageViewer(root)
+    folder_path = r"D:\ricoh\all\sort"
+    raw_image_viewer = RawImageViewer(root, folder_path)
 
     # Bind left and right arrow key events to navigate_images method
     root.bind("<Left>", lambda event: raw_image_viewer.navigate_images("left"))
