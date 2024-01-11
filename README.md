@@ -1,22 +1,48 @@
-# photoMello
+photoMello App
 
-photoMello is a Python-based photo management tool that simplifies the process of organizing, backing up, and managing your photography collection.
+Overview
+photoMello is a Python application built with Tkinter for efficient photo management. It provides functionalities for importing, organizing, and converting photos.
 
-## Features
+Files:
 
-- **User-friendly GUI:** A simple graphical interface for easy photo management.
-- **Metadata and Organization:** Add metadata and organize photos efficiently.
-- **Deleted Files Handling:** Maintain logs to handle deleted files during backups.
-- **Handling a Growing Number of Pictures:** Efficiently organize and archive pictures.
-- **Printing Automation:** Prepare photos for printing with ease.
-- **Continuous Improvement:** Regularly optimize the application based on feedback and changing needs.
+photoMello.py
+Main application with features for importing, organising, and converting images.
 
+image_viewer.py
+Module for viewing and converting raw images to JPEG using rawpy and Pillow.
 
-## Getting Started
+organise_photos.py
+Module for navigating, saving, and archiving photos in a selected folder.
 
-- Clone the repository: `git clone https://github.com/your-username/photoMello.git`
-- *Awaiting set up instructions*
+Dependencies
+Tkinter
+Pillow
+rawpy
+keyboard
 
-## License
+Install dependencies
+pip install tk Pillow rawpy keyboard
 
-This project is licensed under the [MIT License](LICENSE).
+How to Run
+Execute photoMello.py to launch the app. Import photos, organize, and convert to JPEG.
+
+Functionality:
+
+Import Photos -
+Choose a source folder for photo import.
+Organizes photos to a destination folder based on system type.
+
+Organize Photos -
+Navigate with arrow keys.
+Save or archive images using arrow keys.
+
+Convert to JPEG -
+Convert raw (.DNG) images to JPEG.
+Preview, select output location, and convert.
+
+Notes
+Adjust white balance parameters for raw image processing.
+Ensure specified folders exist on your system.
+
+Troubleshooting
+Check console for errors. Verify folder existence and permissions.
