@@ -5,10 +5,10 @@ from tkinter import filedialog
 import rawpy
 from PIL import Image, ImageTk
 
-class RawImageViewer:
+class ConvertViewer:
     def __init__(self, master):
         self.master = master
-        self.master.title("Raw Image Viewer")
+        self.master.title("Convert Viewer")
 
         self.canvas = tk.Canvas(self.master, width=600, height=400)
         self.canvas.pack(pady=10)
@@ -93,5 +93,5 @@ class RawImageViewer:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    raw_image_viewer = RawImageViewer(root)
+    convert_viewer = ConvertViewer(root)
     root.mainloop()

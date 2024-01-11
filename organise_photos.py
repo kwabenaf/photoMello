@@ -14,7 +14,7 @@ class FileOrganiser:
     def get_image_files(self):
         self.image_files = [f for f in os.listdir(self.folder_path) if f.lower().endswith(('.dng', '.jpg'))]
 
-class RawImageViewer:
+class OrganiseViewer:
     def __init__(self, master, folder_path):
         self.master = master
         self.master.title("Organise photos")
@@ -166,14 +166,14 @@ class RawImageViewer:
 if __name__ == "__main__":
     root = tk.Tk()
     folder_path = r"D:\ricoh\all\sort"
-    raw_image_viewer = RawImageViewer(root, folder_path)
+    organise_viewer = OrganiseViewer(root, folder_path)
 
     # Bind left and right arrow key events to navigate_images method
-    root.bind("<Left>", lambda event: raw_image_viewer.navigate_images("left"))
-    root.bind("<Right>", lambda event: raw_image_viewer.navigate_images("right"))
+    root.bind("<Left>", lambda event: organise_viewer.navigate_images("left"))
+    root.bind("<Right>", lambda event: organise_viewer.navigate_images("right"))
 
     # Bind up and down arrow key events to save_message and achieve_message methods
-    root.bind("<Up>", lambda event: raw_image_viewer.save_message())
-    root.bind("<Down>", lambda event: raw_image_viewer.archive_message())
+    root.bind("<Up>", lambda event: organise_viewer.save_message())
+    root.bind("<Down>", lambda event: organise_viewer.archive_message())
 
     root.mainloop()

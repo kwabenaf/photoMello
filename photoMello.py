@@ -6,7 +6,8 @@ import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 from PIL import Image, ImageTk
-from image_viewer import RawImageViewer  # Import RawImageViewer from image_viewer.py
+from image_viewer import ConvertViewer  # Import ConvertViewer from image_viewer.py
+from organise_photos import OrganiseViewer  # Import OrganiseViewer from organise_photos.py
 
 
 # CHECK IF RUNNING ON LAPTOP
@@ -17,10 +18,6 @@ def on_laptop():
     # Check if the hostname indicates that the script is running on the laptop
     return 'laptop' in hostname.lower()
     
-
-
-
-
 
 class PhotoMello:
     """
@@ -230,23 +227,22 @@ class PhotoMello:
 
 # ORGANISE PHOTOS
     def organise_photos(self):
-        image_view = tk.Toplevel(self.root)
-        image_view.title("Image View")
-        print("Organising photos...")
+        # Create a new window for Raw Image Viewer
+        organise_viewer = tk.Toplevel(self.root)
+        organise_viewer.title("Organise Photos")
 
-        # Add a button to go back
-        btn_back = tk.Button(image_view, text="Back", command=image_view.destroy)
-        btn_back.pack(pady=10)
+        # Create an instance of ConvertViewer in the new window
+        organise_viewer = OrganiseViewer(organise_viewer, folder_path=r"D:\ricoh\all\sort")
 
 
 # CONVERT IMAGE TO JPEG
     def convert_jpeg(self):
         # Create a new window for Raw Image Viewer
-        raw_viewer_window = tk.Toplevel(self.root)
-        raw_viewer_window.title("Raw Image Viewer")
+        convert_viewer = tk.Toplevel(self.root)
+        convert_viewer.title("Convert Image")
 
-        # Create an instance of RawImageViewer in the new window
-        raw_image_viewer = RawImageViewer(raw_viewer_window)
+        # Create an instance of ConvertViewer in the new window
+        convert_viewer = ConvertViewer(convert_viewer)
 
         
 if __name__ == "__main__":
