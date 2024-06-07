@@ -1,23 +1,15 @@
 import os
-import keyboard
 import shutil
-import socket
 import tkinter as tk
 from tkinter import filedialog
 from tkinter import messagebox
 from PIL import Image, ImageTk
-from image_viewer import ConvertViewer  # Import ConvertViewer from image_viewer.py
-from organise_photos import OrganiseViewer  # Import OrganiseViewer from organise_photos.py
+import keyboard
 
+from image_viewer import ConvertViewer
+from organise_photos import OrganiseViewer
+from config import DESTINATION_FOLDER, ADDITIONAL_FOLDERS
 
-# CHECK IF RUNNING ON LAPTOP
-def on_laptop():
-    # Get the hostname of the machine
-    hostname = socket.gethostname()
-
-    # Check if the hostname indicates that the script is running on the laptop
-    return 'laptop' in hostname.lower()
-    
 
 class PhotoMello:
     """
@@ -92,45 +84,18 @@ class PhotoMello:
 # IMPORT IMAGES
     def import_photos(self):
 
-    # Check if the user selected a folder
         if source_folder := filedialog.askdirectory(title="Select Source Folder"):
-            # Specify the paths of the additional folders to check for duplicates
-            self.additional_folders = {
-                'pc': [
-                    r"D:\ricoh\all",
-                    r"D:\ricoh\archive",
-                    r"D:\ricoh\print-ready"
-                    
-                ],
-                'laptop': [
-                    r"G:\Other computers\My computer\ricoh\all",
-                    r"G:\Other computers\My computer\ricoh\archive",
-                    r"G:\Other computers\My computer\ricoh\print-ready"
-                ]
-            }
-
-            # Check if the additional folders exist for the current environment
-            for folder in self.additional_folders.get('laptop' if on_laptop() else 'pc', []):
+            for folder in ADDITIONAL_FOLDERS:
                 print(f"Checking folder: {folder}")
                 if not any(os.path.exists(os.path.join(folder, subfolder)) for subfolder in os.listdir(folder)):
                     tk.messagebox.showerror("Error", f"Folder '{folder}' or its subfolders do not exist.")
                     return
 
-            # Specify the destination folder based on the environment
-            destination_folders = {
-                'pc': r"D:\ricoh\all\sort",
-                'laptop': r"G:\Other computers\My computer\ricoh\all\sort"
-            }
-
-            destination_folder = destination_folders.get('laptop' if on_laptop() else 'pc')
-
-            # Ensure the destination folder exists
-            os.makedirs(destination_folder, exist_ok=True)
-            
+            os.makedirs(DESTINATION_FOLDER, exist_ok=True)
 
             # Function to listen for the "ESC" key press
             def check_for_cancel(e):
-                root.after(0, lambda: keyboard.unhook(check_for_cancel))
+                self.root.after(0, lambda: keyboard.unhook(check_for_cancel))
                 tk.messagebox.showinfo("Info", "Operation canceled.")
 
             # Function to copy a file
@@ -141,13 +106,13 @@ class PhotoMello:
         def import_media_internal():
             # Get a set of files in all additional folders
             additional_files = set()
-            for folder in self.additional_folders.get('laptop' if on_laptop() else 'pc', []):
+            for folder in ADDITIONAL_FOLDERS:
                 if os.path.exists(folder):
                     for root, dirs, files in os.walk(folder):
                         additional_files.update(files)
 
             # Get a set of files in the destination folder
-            destination_files = set(os.listdir(destination_folder))
+            destination_files = set(os.listdir(DESTINATION_FOLDER))
 
             # Track the count of copied files for each type
             dng_count = 0
@@ -183,17 +148,17 @@ class PhotoMello:
 
                         # Check if the file is a .DNG, .JPG, or .AVI file
                         if filename.lower().endswith('.dng'):
-                            destination_path = os.path.join(destination_folder, filename)
+                            destination_path = os.path.join(DESTINATION_FOLDER, filename)
                             check_and_copy_file(destination_path, filename, destination_files, additional_files, source_path)
                         elif filename.lower().endswith('.jpg'):
                             dng_filename = filename[:-4] + '.dng'
                             dng_path = os.path.join(root, dng_filename)
                             if not os.path.exists(dng_path):
-                                destination_path = os.path.join(destination_folder, filename)
+                                destination_path = os.path.join(DESTINATION_FOLDER, filename)
                                 check_and_copy_file(destination_path, filename, destination_files, additional_files, source_path)
                                 print(f"JPG file copied: {filename}")
                         elif filename.lower().endswith('.avi'):
-                            video_destination_folder = os.path.join(destination_folder, 'vid')
+                            video_destination_folder = os.path.join(DESTINATION_FOLDER, 'vid')
                             os.makedirs(video_destination_folder, exist_ok=True)
                             destination_path = os.path.join(video_destination_folder, filename)
                             check_and_copy_file(destination_path, filename, destination_files, additional_files, source_path)
@@ -227,12 +192,10 @@ class PhotoMello:
 
 # ORGANISE PHOTOS
     def organise_photos(self):
-        # Create a new window for Raw Image Viewer
-        organise_viewer = tk.Toplevel(self.root)
+        organise_viewer = tk.Toplevel(self.root)    # Create a new window for Raw Image Viewer
         organise_viewer.title("Organise Photos")
+        organise_viewer = OrganiseViewer(organise_viewer, folder_path=DESTINATION_FOLDER)           # Create an instance of ConvertViewer in the new window
 
-        # Create an instance of ConvertViewer in the new window
-        organise_viewer = OrganiseViewer(organise_viewer, folder_path=r"D:\ricoh\all\sort")
 
 
 # CONVERT IMAGE TO JPEG

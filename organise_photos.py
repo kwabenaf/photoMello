@@ -6,6 +6,8 @@ from tkinter import messagebox
 import rawpy
 from PIL import Image, ImageTk
 
+from config import DESTINATION_FOLDER, ADDITIONAL_FOLDERS
+
 class FileOrganiser:
     def __init__(self, folder_path):
         self.folder_path = folder_path
@@ -40,6 +42,14 @@ class OrganiseViewer:
         # Create an instance of FileOrganiser
         self.file_organiser = FileOrganiser(folder_path)
         self.file_organiser.get_image_files()
+
+        # Bind left and right arrow key events to navigate_images method
+        self.master.bind("<Left>", lambda event: self.navigate_images("left"))
+        self.master.bind("<Right>", lambda event: self.navigate_images("right"))
+
+        # Bind up and down arrow key events to save_message and archive_message methods
+        self.master.bind("<Up>", lambda event: self.save_message())
+        self.master.bind("<Down>", lambda event: self.archive_message())
 
     def open_raw_image(self):
         if self.file_organiser.image_files:
@@ -149,10 +159,12 @@ class OrganiseViewer:
 
 
     def save_message(self):
-        self.move_and_display_message(r"D:\ricoh\all", "save")
+        self.move_and_display_message(DESTINATION_FOLDER, "save")
 
     def archive_message(self):
-        self.move_and_display_message(r"D:\ricoh\archive", "archive")
+        archive_folder = [folder for folder in ADDITIONAL_FOLDERS if 'archive' in folder.lower()][0]
+        self.move_and_display_message(archive_folder, "archive")
+
 
     def update_file_indicator(self):
         # Update the file indicator label
@@ -165,8 +177,7 @@ class OrganiseViewer:
 
 if __name__ == "__main__":
     root = tk.Tk()
-    folder_path = r"D:\ricoh\all\sort"
-    organise_viewer = OrganiseViewer(root, folder_path)
+    organise_viewer = OrganiseViewer(root, DESTINATION_FOLDER)
 
     # Bind left and right arrow key events to navigate_images method
     root.bind("<Left>", lambda event: organise_viewer.navigate_images("left"))
